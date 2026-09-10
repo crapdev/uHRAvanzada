@@ -1,7 +1,0 @@
-com/mycompany/corporatetalenthub/model/RecordEnterprise.class
-com/mycompany/corporatetalenthub/model/Employee.class
-com/mycompany/corporatetalenthub/repository/EmployeeRepository.class
-com/mycompany/corporatetalenthub/service/EmployeeService.class
-com/mycompany/corporatetalenthub/app.class
-com/mycompany/corporatetalenthub/view/ConsoleView.class
-com/mycompany/corporatetalenthub/documentation/ArchitectureNotes.class
