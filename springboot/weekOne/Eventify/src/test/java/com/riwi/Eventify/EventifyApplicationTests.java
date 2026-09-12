@@ -2,7 +2,9 @@ package com.riwi.Eventify;
 
 import com.riwi.Eventify.repository.EventRepository;
 import com.riwi.Eventify.service.EventService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -18,7 +20,7 @@ class EventifyApplicationTests {
 
         @BeforeEach
         void setUp(){
-            ventRepository = Mockito.mock(EventRepository.class);
+            eventRepository = Mockito.mock(EventRepository.class);
             eventService = new EventService(eventRepository);
         }
     }

@@ -11,24 +11,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//con esto Swagger agrupa los endpoints como Events
-@Tag(name = "Events", description = "Gestion de eventos de Eventify")
-@RestController // Esta clase va a recibir peticiones HTTP y sus respuestan se devolveran en JSON
+
+@RestController //  Esta clase va a recibir peticiones HTTP y sus respuestan se devolveran en JSON     Combina @Controller y @ResponseBody
 @RequestMapping("/api/events") //Define la ruta
+@Tag(name = "Events", description = "Operaciones para registrar y consultar eventos") //con esto Swagger agrupa los endpoints como Events
 public class EventController {
     private final EventService eventService;
 
     public EventController(EventService eventService){ this.eventService = eventService;}
 
-    @Operation(summary = "Registrar un nuevo evento")
     @PostMapping
-    public ResponseEntity<Event> create(@RequestBody Event event){
+    @Operation(summary = "Registrar un nuevo evento", description = "holaaa")
+    public ResponseEntity<Event> create(@RequestBody Event event){ // el @Requestbody obtiene el json del cliente y lo convierte en un objeto java
         Event createdEvent = eventService.create(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 
-    @Operation(summary = "Obtener eventos")
     @GetMapping
+    @Operation(summary = "Obtener eventos", description = "holaaa")
     public ResponseEntity<List<Event>> listAll(){
         List<Event> events = eventService.listAll();
         return ResponseEntity.ok(events);
