@@ -1,5 +1,6 @@
 package com.riwi.Eventify.service;
 
+import com.riwi.Eventify.exception.InvalidEventException;
 import com.riwi.Eventify.model.Event;
 import com.riwi.Eventify.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,15 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
@@ -48,5 +48,40 @@ public class EventServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("Conferencia java", result.getName()); // Misma coincidencia exacta
         verify(eventRepository, times(1)).save(validEvent);
+    }
+    @Test
+    void save_EmptyName_ThrowsInvalidDataException() {
+        // Arrange (Preparar)
+        Event invalidEvent = new Event(null, "   ", LocalDate.of(2026,10,10), "Descripción");
+
+        // Act & Assert (Actuar y Verificar)
+        assertThrows(InvalidEventException.class, () -> eventService.create(invalidEvent));
+        verify(eventRepository, never()).save(any());
+    }
+
+    @Test
+    void save_NullName_ThrowsInvalidDataException() {
+        // Arrange (Preparar)
+        Event invalidEvent = new Event(null, null, LocalDate.of(2026,10,10), "Descripción");
+
+        // Act & Assert (Actuar y Verificar)
+        assertThrows(InvalidEventException.class, () -> eventService.create(invalidEvent));
+        verify(eventRepository, never()).save(any());
+    }
+
+    @Test
+    void findAll_ReturnsListOfEvents() {
+        // Arrange (Preparar)
+        List<Event> mockList = new ArrayList<>();
+        mockList.add(new Event(1L, "Evento 1", LocalDate.of(2026,10,10), "Desc 1"));
+        when(eventRepository.listEvents()).thenReturn(mockList);
+
+        // Act (Actuar)
+        List<Event> result = eventService.listAll();
+
+        // Assert (Verificar)
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(eventRepository, times(1)).listEvents();
     }
 }
