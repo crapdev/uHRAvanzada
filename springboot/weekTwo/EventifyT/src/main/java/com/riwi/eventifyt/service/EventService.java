@@ -2,12 +2,15 @@ package com.riwi.eventifyt.service;
 
 import com.riwi.eventifyt.DTO.EventRequest;
 import com.riwi.eventifyt.DTO.EventResponse;
+import com.riwi.eventifyt.DTO.PageResponse;
 import com.riwi.eventifyt.domain.Event;
 import com.riwi.eventifyt.exception.InvalidException;
 import com.riwi.eventifyt.exception.ResourceNotFoundException;
 import com.riwi.eventifyt.mapper.EventMapper;
 import com.riwi.eventifyt.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,12 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    public EventResponse findById( Long id ){
+        Event event = findEventOrThrow(id);
+        return eventMapper.toResponse(event);
+    }
+
+    @Transactional(readOnly = true)
     public List<EventResponse> listAll() {
         return eventRepository.findAll().stream()
                 .map(eventMapper::toResponse)
@@ -36,9 +45,9 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventResponse findById( Long id ){
-        Event event = findEventOrThrow(id);
-        return eventMapper.toResponse(event);
+    public PageResponse<EventResponse> listAll(Pageable pageable){
+        Page<Event> page = eventRepository.findAll(pageable);
+        return  PageResponse.from(page.map(eventMapper::toResponse));
     }
 
     public EventResponse update(Long id, EventRequest request){

@@ -1,6 +1,7 @@
 package com.riwi.eventifyt.service;
 
 
+import com.riwi.eventifyt.DTO.PageResponse;
 import com.riwi.eventifyt.DTO.VenueRequest;
 import com.riwi.eventifyt.DTO.VenueResponse;
 import com.riwi.eventifyt.domain.Venue;
@@ -9,6 +10,8 @@ import com.riwi.eventifyt.exception.ResourceNotFoundException;
 import com.riwi.eventifyt.mapper.VenueMapper;
 import com.riwi.eventifyt.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,12 @@ public class VenueService {
     }
 
     @Transactional(readOnly = true)
+    public VenueResponse findById(Long id) {
+        Venue venue = findVenueOrThrow(id);
+        return venueMapper.toResponse(venue);
+    }
+
+    @Transactional(readOnly = true)
     public List<VenueResponse> listAll() {
         return venueRepository.findAll().stream()
                 .map(venueMapper::toResponse)
@@ -37,9 +46,9 @@ public class VenueService {
     }
 
     @Transactional(readOnly = true)
-    public VenueResponse findById(Long id) {
-        Venue venue = findVenueOrThrow(id);
-        return venueMapper.toResponse(venue);
+    public PageResponse<VenueResponse> listAll(Pageable pageable) {
+        Page<Venue> page = venueRepository.findAll(pageable);
+        return PageResponse.from(page.map(venueMapper::toResponse));
     }
 
     public VenueResponse update(Long id, VenueRequest request) {
