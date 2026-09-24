@@ -19,12 +19,14 @@
     </properties>
 
     <dependencies>
+<!--        http://localhost:8080-->
         <!-- Servidor Web REST / Spring MVC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+<!--        http://localhost:8080/swagger-ui.html-->
         <!-- Documentación Swagger / OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>

@@ -1,7 +1,10 @@
 package com.riwi.eventifyt.service;
 
+import com.riwi.eventifyt.DTO.EventRequest;
+import com.riwi.eventifyt.DTO.EventResponse;
 import com.riwi.eventifyt.domain.Event;
 import com.riwi.eventifyt.exception.InvalidException;
+import com.riwi.eventifyt.mapper.EventMapper;
 import com.riwi.eventifyt.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,66 +24,74 @@ public class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
+    @Mock
+    private EventMapper eventMapper;      // el service ahora depende de él
     @InjectMocks
     private EventService eventService;
 
-    private Event validEvent;
+    private EventRequest validRequest;
 
-
-    @BeforeEach // ejecuta este metodo antes de cada prueba
+    @BeforeEach
     void setUp() {
-        validEvent = new Event(null, "Conferencia java", LocalDate.of(2026, 10, 20), "description jajaj");
+        validRequest = new EventRequest("Conferencia java", LocalDate.of(2026, 10, 20), "description jajaj");
     }
 
-    // al hacer una prueba se organiza con la estructura AAA  Arrange-preparar |  Act-Actuar  Y Assert-verificar
     @Test
-    void save_validEvent_ReturnSavedEvent(){
+    void create_validEvent_ReturnsSavedEvent() {
         // Arrange
-        Event savedMock = new Event(1L, "Conferencia java", LocalDate.of(2026, 10, 20), "description jajaj");
-        when(eventRepository.save(validEvent)).thenReturn(savedMock);
+        Event mappedEntity = Event.builder()
+                .name("Conferencia java").date(LocalDate.of(2026, 10, 20)).description("description jajaj").build();
+        Event savedEntity = Event.builder()
+                .id(1L).name("Conferencia java").date(LocalDate.of(2026, 10, 20)).description("description jajaj").build();
+        EventResponse expectedResponse =
+                new EventResponse(1L, "Conferencia java", LocalDate.of(2026, 10, 20), "description jajaj");
+
+        when(eventMapper.toEntity(validRequest)).thenReturn(mappedEntity);
+        when(eventRepository.save(mappedEntity)).thenReturn(savedEntity);
+        when(eventMapper.toResponse(savedEntity)).thenReturn(expectedResponse);
 
         // Act
-        Event result = eventService.create(validEvent);
+        EventResponse result = eventService.create(validRequest);
 
-        // Assert-verificar
+        // Assert
         assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("Conferencia java", result.getName()); // Misma coincidencia exacta
-        verify(eventRepository, times(1)).save(validEvent);
+        assertEquals(1L, result.id());               // record → accesores sin "get"
+        assertEquals("Conferencia java", result.name());
+        verify(eventRepository, times(1)).save(mappedEntity);
     }
-    @Test
-    void save_EmptyName_ThrowsInvalidDataException() {
-        // Arrange (Preparar)
-        Event invalidEvent = new Event(null, "   ", LocalDate.of(2026,10,10), "Descripción");
 
-        // Act & Assert (Actuar y Verificar)
-        assertThrows(InvalidException.class, () -> eventService.create(invalidEvent));
+    @Test
+    void create_EmptyName_ThrowsInvalidException() {
+        EventRequest invalidRequest = new EventRequest("   ", LocalDate.of(2026, 10, 10), "Descripción");
+
+        assertThrows(InvalidException.class, () -> eventService.create(invalidRequest));
         verify(eventRepository, never()).save(any());
     }
 
     @Test
-    void save_NullName_ThrowsInvalidDataException() {
-        // Arrange (Preparar)
-        Event invalidEvent = new Event(null, null, LocalDate.of(2026,10,10), "Descripción");
+    void create_NullName_ThrowsInvalidException() {
+        EventRequest invalidRequest = new EventRequest(null, LocalDate.of(2026, 10, 10), "Descripción");
 
-        // Act & Assert (Actuar y Verificar)
-        assertThrows(InvalidException.class, () -> eventService.create(invalidEvent));
+        assertThrows(InvalidException.class, () -> eventService.create(invalidRequest));
         verify(eventRepository, never()).save(any());
     }
 
     @Test
-    void findAll_ReturnsListOfEvents() {
-        // Arrange (Preparar)
-        List<Event> mockList = new ArrayList<>();
-        mockList.add(new Event(1L, "Evento 1", LocalDate.of(2026,10,10), "Desc 1"));
-        when(eventRepository.findAll()).thenReturn(mockList);
+    void listAll_ReturnsListOfEvents() {
+        // Arrange
+        Event event1 = Event.builder().id(1L).name("Evento 1").date(LocalDate.of(2026, 10, 10)).description("Desc 1").build();
+        EventResponse response1 = new EventResponse(1L, "Evento 1", LocalDate.of(2026, 10, 10), "Desc 1");
 
-        // Act (Actuar)
-        List<Event> result = eventService.listAll();
+        when(eventRepository.findAll()).thenReturn(List.of(event1));
+        when(eventMapper.toResponse(event1)).thenReturn(response1);
 
-        // Assert (Verificar)
+        // Act
+        List<EventResponse> result = eventService.listAll();
+
+        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
+        assertEquals("Evento 1", result.get(0).name());
         verify(eventRepository, times(1)).findAll();
     }
 }
