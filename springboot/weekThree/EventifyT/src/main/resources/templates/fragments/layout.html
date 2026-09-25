@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Fragmento 1: el <head>, recibe el título de la página como parámetro -->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | Eventify Admin'">Eventify Admin</title>
+    <style>
+        body  { font-family: sans-serif; margin: 0 2rem; }
+        nav a { margin-right: 1rem; }
+        table { border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+        body  { font-family: sans-serif; margin: 0 2rem; }
+        nav a { margin-right: 1rem; }
+        table { border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+        .error   { color: #c00; }
+        .success { color: #080; font-weight: bold; }
+    </style>
+</head>
+<!-- Fragmento 3: mensajes de confirmación (flash attributes) -->
+<p th:fragment="flash" class="success"
+   th:if="${successMessage}" th:text="${successMessage}">
+    Mensaje de éxito
+</p>
+<body>
+
+<!-- Fragmento 2: la barra de navegación -->
+<nav th:fragment="navbar">
+    <h2>Eventify Admin</h2>
+    <a th:href="@{/admin}">Inicio</a>
+    <a th:href="@{/admin/events}">Eventos</a>
+    <a th:href="@{/admin/venues}">Lugares</a>
+    <hr>
+</nav>
+
+</body>
+</html>

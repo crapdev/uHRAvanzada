@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Nuevo evento')}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1>Nuevo evento</h1>
+
+    <form th:action="@{/admin/events}" th:object="${eventForm}" method="post">
+
+        <p>
+            <label for="name">Nombre *</label><br>
+            <input type="text" th:field="*{name}">
+            <br><small class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</small>
+        </p>
+
+        <p>
+            <label for="date">Fecha *</label><br>
+            <input type="date" th:field="*{date}">
+            <br><small class="error" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</small>
+        </p>
+
+        <p>
+            <label for="description">Descripción</label><br>
+            <textarea th:field="*{description}" rows="4" cols="50"></textarea>
+            <br><small class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Error</small>
+        </p>
+
+        <button type="submit">Guardar</button>
+        <a th:href="@{/admin/events}">Cancelar</a>
+    </form>
+</main>
+
+</body>
+</html>

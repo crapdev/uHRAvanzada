@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Eventos')}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1>Eventos</h1>
+
+    <p th:replace="~{fragments/layout :: flash}"></p>
+
+    <p><a th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
+
+    <!-- Escenario 2: catálogo vacío -->
+    <p th:if="${#lists.isEmpty(events)}">
+        Actualmente no hay eventos programados.
+    </p>
+
+    <!-- Escenario 1: hay eventos → tabla -->
+    <table th:unless="${#lists.isEmpty(events)}">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td th:text="${event.id}">1</td>
+            <td th:text="${event.name}">Nombre de ejemplo</td>
+            <td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">01/01/2026</td>
+            <td th:text="${event.description}">Descripción de ejemplo</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:unless="${#lists.isEmpty(events)}"
+       th:text="'Total: ' + ${#lists.size(events)} + ' eventos'">Total: 0 eventos</p>
+</main>
+
+</body>
+</html>

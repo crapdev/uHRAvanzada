@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1>Panel administrativo</h1>
+    <p>Desde aqui puedes gestionar el catalogo de eventos y lugares.</p>
+    <ul>
+        <li><a th:href="@{/admin/events}">Gestionar eventos</a></li>
+        <li><a th:href="@{/admin/venues}">Gestionar lugares</a></li>
+    </ul>
+</main>
+
+</body>
+</html>
