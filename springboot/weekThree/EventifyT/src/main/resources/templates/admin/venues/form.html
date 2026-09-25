@@ -1,10 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:with="isEdit=${venueId != null}">
+
+<head th:replace="~{fragments/layout :: head(${isEdit} ? 'Editar lugar' : 'Nuevo lugar')}"></head>
+
 <body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1 th:text="${isEdit} ? 'Editar lugar' : 'Nuevo lugar'">Nuevo lugar</h1>
+
+    <form th:action="${isEdit} ? @{/admin/venues/{id}(id=${venueId})} : @{/admin/venues}"
+          th:object="${venueForm}" method="post">
+
+        <p>
+            <label for="name">Nombre *</label><br>
+            <input type="text" th:field="*{name}">
+            <br><small class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</small>
+        </p>
+
+        <p>
+            <label for="address">Dirección *</label><br>
+            <input type="text" th:field="*{address}">
+            <br><small class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Error</small>
+        </p>
+
+        <p>
+            <label for="capacity">Capacidad *</label><br>
+            <input type="number" min="1" th:field="*{capacity}">
+            <br><small class="error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}">Error</small>
+        </p>
+
+        <button type="submit">Guardar</button>
+        <a th:href="@{/admin/venues}">Cancelar</a>
+    </form>
+</main>
 
 </body>
 </html>

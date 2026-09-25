@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,7 +26,7 @@ public class EventServiceTest {
     @Mock
     private EventRepository eventRepository;
     @Mock
-    private EventMapper eventMapper;      // el service ahora depende de él
+    private EventMapper eventMapper;
     @InjectMocks
     private EventService eventService;
 
@@ -55,7 +56,7 @@ public class EventServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(1L, result.id());               // record → accesores sin "get"
+        assertEquals(1L, result.id());
         assertEquals("Conferencia java", result.name());
         verify(eventRepository, times(1)).save(mappedEntity);
     }
@@ -82,7 +83,7 @@ public class EventServiceTest {
         Event event1 = Event.builder().id(1L).name("Evento 1").date(LocalDate.of(2026, 10, 10)).description("Desc 1").build();
         EventResponse response1 = new EventResponse(1L, "Evento 1", LocalDate.of(2026, 10, 10), "Desc 1");
 
-        when(eventRepository.findAll()).thenReturn(List.of(event1));
+        when(eventRepository.findAll(any(Sort.class))).thenReturn(List.of(event1));
         when(eventMapper.toResponse(event1)).thenReturn(response1);
 
         // Act
@@ -92,6 +93,6 @@ public class EventServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Evento 1", result.get(0).name());
-        verify(eventRepository, times(1)).findAll();
+        verify(eventRepository, times(1)).findAll(any(Sort.class));
     }
 }

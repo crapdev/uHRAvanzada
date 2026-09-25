@@ -14,12 +14,10 @@
 
     <p><a th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
 
-    <!-- Escenario 2: catálogo vacío -->
     <p th:if="${#lists.isEmpty(events)}">
         Actualmente no hay eventos programados.
     </p>
 
-    <!-- Escenario 1: hay eventos → tabla -->
     <table th:unless="${#lists.isEmpty(events)}">
         <thead>
         <tr>
@@ -27,6 +25,7 @@
             <th>Nombre</th>
             <th>Fecha</th>
             <th>Descripción</th>
+            <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -35,6 +34,14 @@
             <td th:text="${event.name}">Nombre de ejemplo</td>
             <td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">01/01/2026</td>
             <td th:text="${event.description}">Descripción de ejemplo</td>
+            <td>
+                <a th:href="@{/admin/events/{id}/edit(id=${event.id})}">Editar</a>
+                <form class="inline" method="post"
+                      th:action="@{/admin/events/{id}/delete(id=${event.id})}"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar este evento?');">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

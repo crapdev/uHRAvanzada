@@ -11,6 +11,7 @@ import com.riwi.eventifyt.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
 
-
-    public EventResponse create(EventRequest request){
+    public EventResponse create(EventRequest request) {
         validate(request);
         Event event = eventMapper.toEntity(request);
         Event saved = eventRepository.save(event);
@@ -32,39 +32,39 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventResponse findById( Long id ){
+    public EventResponse findById(Long id) {
         Event event = findEventOrThrow(id);
         return eventMapper.toResponse(event);
     }
 
     @Transactional(readOnly = true)
     public List<EventResponse> listAll() {
-        return eventRepository.findAll().stream()
+        return eventRepository.findAll(Sort.by("date")).stream()   // ORDER BY date ASC
                 .map(eventMapper::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<EventResponse> listAll(Pageable pageable){
+    public PageResponse<EventResponse> listAll(Pageable pageable) {
         Page<Event> page = eventRepository.findAll(pageable);
-        return  PageResponse.from(page.map(eventMapper::toResponse));
+        return PageResponse.from(page.map(eventMapper::toResponse));
     }
 
-    public EventResponse update(Long id, EventRequest request){
+    public EventResponse update(Long id, EventRequest request) {
         validate(request);
-        Event event = findEventOrThrow(id); // 404 si no existe
-        eventMapper.updateEntity(event, request); // pisa los campos sobre la entidad ya persistida
+        Event event = findEventOrThrow(id);
+        eventMapper.updateEntity(event, request);
         Event updated = eventRepository.save(event);
-        return  eventMapper.toResponse(updated);
+        return eventMapper.toResponse(updated);
     }
 
-    public void delete(Long id){
-        Event event = findEventOrThrow(id); // valida que exista antes de borrar
+    public void delete(Long id) {
+        Event event = findEventOrThrow(id);
         eventRepository.delete(event);
     }
 
-    /* -- Privates --*/
-    private Event findEventOrThrow(Long id){
+    /* -- Privates -- */
+    private Event findEventOrThrow(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No se encontro el evento con el id " + id));
@@ -75,7 +75,4 @@ public class EventService {
             throw new InvalidException("El nombre del evento no puede estar vacío");
         }
     }
-
-
-
 }

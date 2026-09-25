@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:with="isEdit=${eventId != null}">
 
-<head th:replace="~{fragments/layout :: head('Nuevo evento')}"></head>
+<head th:replace="~{fragments/layout :: head(${isEdit} ? 'Editar evento' : 'Nuevo evento')}"></head>
 
 <body>
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <main>
-    <h1>Nuevo evento</h1>
+    <h1 th:text="${isEdit} ? 'Editar evento' : 'Nuevo evento'">Nuevo evento</h1>
 
-    <form th:action="@{/admin/events}" th:object="${eventForm}" method="post">
+    <form th:action="${isEdit} ? @{/admin/events/{id}(id=${eventId})} : @{/admin/events}"
+          th:object="${eventForm}" method="post">
 
         <p>
             <label for="name">Nombre *</label><br>

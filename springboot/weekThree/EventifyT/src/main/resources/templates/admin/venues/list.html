@@ -1,10 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Lugares')}"></head>
+
 <body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1>Lugares</h1>
+
+    <p th:replace="~{fragments/layout :: flash}"></p>
+
+    <p><a th:href="@{/admin/venues/new}">+ Nuevo lugar</a></p>
+
+    <p th:if="${#lists.isEmpty(venues)}">
+        Actualmente no hay lugares registrados.
+    </p>
+
+    <table th:unless="${#lists.isEmpty(venues)}">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Capacidad</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="venue : ${venues}">
+            <td th:text="${venue.id}">1</td>
+            <td th:text="${venue.name}">Nombre de ejemplo</td>
+            <td th:text="${venue.address}">Dirección de ejemplo</td>
+            <td th:text="${venue.capacity}">100</td>
+            <td>
+                <a th:href="@{/admin/venues/{id}/edit(id=${venue.id})}">Editar</a>
+                <form class="inline" method="post"
+                      th:action="@{/admin/venues/{id}/delete(id=${venue.id})}"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar este lugar?');">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:unless="${#lists.isEmpty(venues)}"
+       th:text="'Total: ' + ${#lists.size(venues)} + ' lugares'">Total: 0 lugares</p>
+</main>
 
 </body>
 </html>

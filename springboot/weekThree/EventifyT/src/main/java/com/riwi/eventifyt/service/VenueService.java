@@ -12,11 +12,11 @@ import com.riwi.eventifyt.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 
 @Service
 @Transactional
@@ -25,7 +25,7 @@ public class VenueService {
     private final VenueRepository venueRepository;
     private final VenueMapper venueMapper;
 
-    public VenueResponse create(VenueRequest request){
+    public VenueResponse create(VenueRequest request) {
         validate(request);
         Venue venue = venueMapper.toEntity(request);
         Venue saved = venueRepository.save(venue);
@@ -40,7 +40,7 @@ public class VenueService {
 
     @Transactional(readOnly = true)
     public List<VenueResponse> listAll() {
-        return venueRepository.findAll().stream()
+        return venueRepository.findAll(Sort.by("name")).stream()   // ORDER BY name ASC
                 .map(venueMapper::toResponse)
                 .toList();
     }
@@ -55,7 +55,7 @@ public class VenueService {
         validate(request);
         Venue venue = findVenueOrThrow(id);
         venueMapper.updateEntity(venue, request);
-        Venue updated = venueRepository.save(venue); // probar el stwr quitando esta linea a ver si hibernate cambia los datos en la base de datos
+        Venue updated = venueRepository.save(venue);
         return venueMapper.toResponse(updated);
     }
 
@@ -64,8 +64,7 @@ public class VenueService {
         venueRepository.delete(venue);
     }
 
-    /* --- privates ---*/
-
+    /* --- Privates --- */
     private Venue findVenueOrThrow(Long id) {
         return venueRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -78,4 +77,3 @@ public class VenueService {
         }
     }
 }
-
