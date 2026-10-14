@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Eventos')}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1>Eventos</h1>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <p><a th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
+
+    <!-- Filtros: method="get" → quedan en la URL (?city=bog&category=rock) -->
+    <form class="filters" method="get" th:action="@{/admin/events}" th:object="${filter}">
+        <label>Nombre <input type="text" th:field="*{name}" placeholder="concierto"></label>
+        <label>Ciudad <input type="text" th:field="*{city}" placeholder="bog"></label>
+        <label>Categoría <input type="text" th:field="*{category}" placeholder="rock"></label>
+        <label>Capacidad mín. <input type="number" min="1" th:field="*{minCapacity}"></label>
+        <label>Desde <input type="date" th:field="*{from}"></label>
+        <label>Hasta <input type="date" th:field="*{to}"></label>
+        <button type="submit">Buscar</button>
+        <a th:href="@{/admin/events}">Limpiar</a>
+    </form>
+
+    <p th:unless="${events.hasContent()}">
+        Actualmente no hay eventos programados.
+    </p>
+
+    <table th:if="${events.hasContent()}">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Lugar</th>
+            <th>Ciudad</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${events.content}">
+            <td th:text="${event.id}">1</td>
+            <td th:text="${event.name}">Nombre de ejemplo</td>
+            <td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">01/01/2026</td>
+            <td th:text="${event.venueName}">Lugar de ejemplo</td>
+            <td th:text="${event.city}">Ciudad de ejemplo</td>
+            <td>
+                <a th:href="@{/admin/events/{id}/edit(id=${event.id})}">Editar</a>
+                <form class="inline" method="post"
+                      th:action="@{/admin/events/{id}/delete(id=${event.id})}"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar este evento?');">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Navegacion del Slice: cada enlace conserva los filtros; se deshabilita si no hay pagina -->
+    <nav class="pager" th:if="${events.hasPrevious() or events.hasNext()}">
+        <a th:if="${prevUrl}" th:href="@{${prevUrl}}">&laquo; Anterior</a>
+        <span th:unless="${prevUrl}" class="disabled">&laquo; Anterior</span>
+
+        <span th:text="'Página ' + ${events.number + 1}">Página 1</span>
+
+        <a th:if="${nextUrl}" th:href="@{${nextUrl}}">Siguiente &raquo;</a>
+        <span th:unless="${nextUrl}" class="disabled">Siguiente &raquo;</span>
+    </nav>
+</main>
+
+</body>
+</html>

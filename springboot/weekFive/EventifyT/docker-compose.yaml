@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: eventify-db
+    environment:
+      POSTGRES_DB: eventify
+      POSTGRES_USER: cristian
+      POSTGRES_PASSWORD: 123.qwe**
+    ports:
+      - "5435:5432"          # puerto-de-tu-PC : puerto-del-contenedor
+    volumes:
+      - eventify_pgdata:/var/lib/postgresql/data   # aquí viven los datos
+
+volumes:
+  eventify_pgdata:
