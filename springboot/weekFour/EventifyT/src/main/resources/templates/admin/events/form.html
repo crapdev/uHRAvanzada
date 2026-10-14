@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:with="isEdit=${eventId != null}">
+
+<head th:replace="~{fragments/layout :: head(${isEdit} ? 'Editar evento' : 'Nuevo evento')}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <h1 th:text="${isEdit} ? 'Editar evento' : 'Nuevo evento'">Nuevo evento</h1>
+
+    <form th:action="${isEdit} ? @{/admin/events/{id}(id=${eventId})} : @{/admin/events}"
+          th:object="${eventForm}" method="post">
+
+        <p>
+            <label for="name">Nombre *</label><br>
+            <input type="text" th:field="*{name}">
+            <br><small class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</small>
+        </p>
+
+        <p>
+            <label for="date">Fecha *</label><br>
+            <input type="date" th:field="*{date}">
+            <br><small class="error" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</small>
+        </p>
+
+        <p>
+            <label for="venueId">Lugar *</label><br>
+            <select th:field="*{venueId}">
+                <option value="">-- Selecciona un lugar --</option>
+                <option th:each="venue : ${venues}"
+                        th:value="${venue.id}"
+                        th:text="${venue.name} + ' (' + ${venue.city} + ')'">Lugar (Ciudad)</option>
+            </select>
+            <br><small class="error" th:if="${#fields.hasErrors('venueId')}" th:errors="*{venueId}">Error</small>
+        </p>
+
+        <fieldset>
+            <legend>Categorías</legend>
+            <label th:each="category : ${categories}" class="checkbox">
+                <input type="checkbox" th:field="*{categoryIds}" th:value="${category.id}">
+                <span th:text="${category.name}" th:title="${category.description}">Categoría</span>
+            </label>
+        </fieldset>
+
+        <p>
+            <label for="description">Descripción</label><br>
+            <textarea th:field="*{description}" rows="4" cols="50"></textarea>
+            <br><small class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Error</small>
+        </p>
+
+        <button type="submit">Guardar</button>
+        <a th:href="@{/admin/events}">Cancelar</a>
+    </form>
+</main>
+
+</body>
+</html>
